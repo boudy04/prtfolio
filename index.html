@@ -4,101 +4,121 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Abdelrahman Magdy — Software Engineering Student</title>
+<!-- ponytail: Google Fonts is the one external dep; system fallback keeps it usable offline -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:#0f1115; --bg2:#131720; --fg:#e6e6e6; --muted:#9aa0a6;
-    --accent:#5b8cff; --card:#171a21; --border:#262b33; --shadow:0 8px 30px rgba(0,0,0,.4);
+    --bg:#0e0f13; --bg2:#14161d; --fg:#f3f3f0; --muted:#9aa0a6;
+    --accent:#ff5b29; --card:#16181f; --border:#262932; --shadow:0 10px 40px rgba(0,0,0,.45);
   }
   html[data-theme="light"] {
-    --bg:#f6f7f9; --bg2:#ffffff; --fg:#1a1d23; --muted:#5b626b;
-    --accent:#2f6bff; --card:#ffffff; --border:#e3e6ea; --shadow:0 8px 30px rgba(20,30,60,.08);
+    --bg:#f4f3ee; --bg2:#ffffff; --fg:#16181d; --muted:#5b626b;
+    --accent:#e0451c; --card:#ffffff; --border:#e6e3da; --shadow:0 10px 40px rgba(20,30,60,.10);
   }
   * { box-sizing:border-box; }
   html { scroll-behavior:smooth; }
   body {
-    margin:0; color:var(--fg); background:
-      radial-gradient(1200px 600px at 80% -10%, color-mix(in srgb, var(--accent) 12%, transparent), transparent),
-      var(--bg);
-    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    transition:background .3s, color .3s;
+    margin:0; color:var(--fg); background:var(--bg);
+    font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-size:16px; line-height:1.65; -webkit-font-smoothing:antialiased;
+    transition:background .5s ease, color .5s ease; overflow-x:hidden;
   }
   a { color:var(--accent); text-decoration:none; }
-  a:hover { text-decoration:underline; }
-  .wrap { max-width:860px; margin:0 auto; padding:56px 22px 90px; }
+  .display { font-family:"Fraunces",Georgia,serif; }
 
-  header { text-align:center; margin-bottom:48px; }
-  header h1 {
-    margin:0; font-size:clamp(2rem,5vw,3rem); letter-spacing:-.02em;
-    background:linear-gradient(90deg,var(--fg),var(--accent));
-    -webkit-background-clip:text; background-clip:text; color:transparent;
+  /* custom cursor */
+  .cursor {
+    position:fixed; top:0; left:0; width:18px; height:18px; border-radius:50%;
+    background:var(--fg); mix-blend-mode:difference; pointer-events:none;
+    transform:translate(-50%,-50%); transition:width .2s, height .2s, opacity .2s; z-index:9999;
   }
-  .role { color:var(--muted); max-width:620px; margin:12px auto 22px; }
-  .links { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; align-items:center; }
+  .cursor.hover { width:54px; height:54px; }
+  @media (hover:none) { .cursor { display:none; } }
+
+  .wrap { max-width:1080px; margin:0 auto; padding:0 28px; }
+
+  /* cover-page hero */
+  .hero { min-height:92vh; display:flex; flex-direction:column; justify-content:center; }
+  .hero h1 {
+    font-size:clamp(3rem,12vw,9rem); line-height:.92; letter-spacing:-.03em; margin:0;
+    font-weight:600;
+  }
+  .hero h1 .accent { color:var(--accent); font-style:italic; }
+  .hero .tag {
+    margin-top:28px; max-width:540px; font-size:1.15rem; color:var(--muted);
+  }
+  .topnav { display:flex; gap:14px; justify-content:flex-end; padding:26px 0; flex-wrap:wrap; }
   .pill {
-    border:1px solid var(--border); padding:8px 16px; border-radius:999px;
-    background:var(--card); transition:transform .15s, border-color .15s;
+    border:1px solid var(--border); padding:9px 18px; border-radius:999px;
+    background:var(--card); font-size:.9rem; transition:transform .18s, border-color .18s, color .18s;
+    display:inline-block; color:var(--fg); cursor:pointer;
   }
-  .pill:hover { transform:translateY(-2px); border-color:var(--accent); text-decoration:none; }
-  #theme { cursor:pointer; }
+  .pill:hover { border-color:var(--accent); color:var(--accent); text-decoration:none; }
+  #theme { background:none; }
 
-  h2 {
-    font-size:1.15rem; text-transform:uppercase; letter-spacing:.08em;
-    color:var(--muted); border-bottom:1px solid var(--border);
-    padding-bottom:8px; margin:46px 0 18px;
-  }
+  section { padding:90px 0; border-top:1px solid var(--border); }
+  .eyebrow { text-transform:uppercase; letter-spacing:.18em; font-size:.75rem; color:var(--accent); margin:0 0 22px; }
+  h2 { font-size:clamp(1.8rem,4vw,2.8rem); margin:0 0 30px; letter-spacing:-.02em; }
 
-  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:22px; }
   .card {
-    background:var(--card); border:1px solid var(--border); border-radius:14px;
-    padding:18px; box-shadow:var(--shadow); transition:transform .15s, border-color .15s;
+    background:var(--card); border:1px solid var(--border); border-radius:18px; padding:26px;
+    box-shadow:var(--shadow); transition:transform .2s, border-color .2s;
   }
-  .card:hover { transform:translateY(-3px); border-color:var(--accent); }
-  .card h3 { margin:0 0 6px; font-size:1.02rem; }
-  .card p { margin:0 0 10px; color:var(--muted); font-size:.9rem; }
+  .card:hover { transform:translateY(-6px); border-color:var(--accent); }
+  .card h3 { margin:0 0 10px; font-size:1.25rem; }
+  .card p { margin:0 0 16px; color:var(--muted); font-size:.95rem; }
 
-  .panel {
-    background:var(--card); border:1px solid var(--border); border-radius:14px;
-    padding:20px 24px; box-shadow:var(--shadow);
-  }
-  ul { padding-left:20px; margin:0; }
-  li { margin:6px 0; }
+  .panel { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:30px 34px; box-shadow:var(--shadow); }
+  .panel ul { margin:0; padding-left:20px; } .panel li { margin:9px 0; }
 
-  .reveal { opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease; }
+  .reveal { opacity:0; transform:translateY(28px); transition:opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
   .reveal.visible { opacity:1; transform:none; }
 
-  footer { margin-top:64px; color:var(--muted); font-size:.85rem; text-align:center; }
+  .mask { overflow:hidden; }
+  .mask > * { display:block; transform:translateY(100%); transition:transform .9s cubic-bezier(.2,.7,.2,1); }
+  .mask.visible > * { transform:none; }
+
+  footer { padding:60px 0 80px; color:var(--muted); font-size:.85rem; text-align:center; }
   @media (prefers-reduced-motion:reduce) {
-    .reveal { opacity:1; transform:none; transition:none; }
-    html { scroll-behavior:auto; }
+    * { transition:none !important; scroll-behavior:auto; }
+    .reveal,.mask > * { opacity:1; transform:none; }
   }
 </style>
 </head>
 <body>
-<main class="wrap">
-  <header>
-    <h1>Abdelrahman Magdy</h1>
-    <p class="role">Software Engineering student (GPA 3.89, AAST) building Android apps in Kotlin and Kotlin/Java.</p>
-    <nav class="links">
-      <a class="pill" href="https://github.com/boudy04">GitHub</a>
-      <a class="pill" href="mailto:abdelrahmanmagdy04@gmail.com">Email</a>
-      <span class="pill muted">Alexandria, Egypt</span>
-      <button class="pill" id="theme" aria-label="Toggle theme">🌓 Theme</button>
-    </nav>
+<div class="cursor" aria-hidden="true"></div>
+<div class="wrap">
+
+  <nav class="topnav">
+    <a class="pill" href="https://github.com/boudy04">GitHub</a>
+    <a class="pill" href="mailto:abdelrahmanmagdy04@gmail.com">Email</a>
+    <span class="pill muted">Alexandria, Egypt</span>
+    <button class="pill" id="theme">◐ Theme</button>
+  </nav>
+
+  <header class="hero">
+    <h1 class="display">Abdelrahman<br><span class="accent">Magdy</span></h1>
+    <p class="tag">Software Engineering student (GPA 3.89, AAST) building Android apps in Kotlin and Kotlin/Java.</p>
   </header>
 
   <section class="reveal">
-    <h2>Projects</h2>
+    <p class="eyebrow">Selected work</p>
+    <h2 class="display">Projects</h2>
     <div class="cards">
       <div class="card">
-        <h3>Portfolio Site</h3>
-        <p>Static site, zero build, hosted on GitHub Pages.</p>
+        <h3 class="display">Portfolio Site</h3>
+        <p>Static site, zero build, hosted on GitHub Pages. The page you're on.</p>
         <a href="https://boudy04.github.io/prtfolio/">Live</a> · <a href="https://github.com/boudy04/prtfolio">Repo</a>
       </div>
     </div>
   </section>
 
   <section class="reveal">
-    <h2>Skills</h2>
+    <p class="eyebrow">Toolbox</p>
+    <h2 class="display">Skills</h2>
     <div class="panel">
       <ul>
         <li><strong>Languages:</strong> Java, Kotlin, C, C++, JavaScript, SQL</li>
@@ -110,7 +130,8 @@
   </section>
 
   <section class="reveal">
-    <h2>Education</h2>
+    <p class="eyebrow">Background</p>
+    <h2 class="display">Education</h2>
     <div class="panel">
       <ul>
         <li><strong>Arab Academy for Science, Technology &amp; Maritime Transport</strong> — B.Sc. Software Engineering, expected 2028</li>
@@ -120,7 +141,8 @@
   </section>
 
   <section class="reveal">
-    <h2>Experience</h2>
+    <p class="eyebrow">What I've done</p>
+    <h2 class="display">Experience</h2>
     <div class="panel">
       <ul>
         <li><strong>Peer Mentorship &amp; Technical Leadership</strong> — selected by professors to mentor peers in OOP; assisted <strong>20+ students</strong> debugging Java and understanding multithreading.</li>
@@ -131,21 +153,17 @@
   </section>
 
   <section class="reveal">
-    <h2>Activities</h2>
+    <p class="eyebrow">Off-screen</p>
+    <h2 class="display">Activities</h2>
     <div class="panel">
-      <ul>
-        <li>Chess, Kung Fu, Public Speaking, continuous self-development.</li>
-      </ul>
+      <ul><li>Chess, Kung Fu, Public Speaking, continuous self-development.</li></ul>
     </div>
   </section>
 
-  <footer>
-    Built as project #1 of the 8-week CV plan. Last updated 2026-08-14.
-  </footer>
-</main>
+  <footer>Built as project #1 of the 8-week CV plan. Last updated 2026-08-14.</footer>
+</div>
 
 <script>
-  // ponytail: vanilla only, no deps. Theme persisted in localStorage.
   (function () {
     var root = document.documentElement;
     var saved = localStorage.getItem('theme');
@@ -156,11 +174,35 @@
       localStorage.setItem('theme', next);
     });
 
-    // Scroll reveal
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.1 });
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
     document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+
+    // ponytail: custom cursor + magnetic buttons, vanilla, no libs. Disabled on touch.
+    if (window.matchMedia('(hover:hover)').matches) {
+      var cur = document.querySelector('.cursor');
+      var mx = 0, my = 0, cx = 0, cy = 0;
+      document.addEventListener('mousemove', function (e) { mx = e.clientX; my = e.clientY; });
+      (function loop() {
+        cx += (mx - cx) * 0.2; cy += (my - cy) * 0.2;
+        cur.style.left = cx + 'px'; cur.style.top = cy + 'px';
+        requestAnimationFrame(loop);
+      })();
+      document.querySelectorAll('a, button').forEach(function (el) {
+        el.addEventListener('mouseenter', function () { cur.classList.add('hover'); });
+        el.addEventListener('mouseleave', function () { cur.classList.remove('hover'); });
+      });
+      document.querySelectorAll('.pill').forEach(function (btn) {
+        btn.addEventListener('mousemove', function (e) {
+          var r = btn.getBoundingClientRect();
+          var x = e.clientX - (r.left + r.width / 2);
+          var y = e.clientY - (r.top + r.height / 2);
+          btn.style.transform = 'translate(' + x * 0.25 + 'px,' + y * 0.4 + 'px)';
+        });
+        btn.addEventListener('mouseleave', function () { btn.style.transform = ''; });
+      });
+    }
   })();
 </script>
 </body>
