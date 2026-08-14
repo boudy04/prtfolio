@@ -174,10 +174,15 @@
       localStorage.setItem('theme', next);
     });
 
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.12 });
-    document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+    // ponytail: threshold 0 + fallback so content never stays hidden on small/tall screens
+    if (!('IntersectionObserver' in window)) {
+      document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('visible'); });
+    } else {
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+      }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+    }
 
     // ponytail: custom cursor + magnetic buttons, vanilla, no libs. Disabled on touch.
     if (window.matchMedia('(hover:hover)').matches) {
