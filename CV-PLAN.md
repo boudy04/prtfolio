@@ -114,7 +114,7 @@
 
 | Week | Item | Status |
 |------|------|--------|
-| 1 | Portfolio site + GitHub account | ⬜ |
+| 1 | Portfolio site + GitHub account | ✅ live: https://boudy04.github.io/prtfolio/ |
 | 2 | Java CLI tool | ⬜ |
 | 3–5 | REST API | ⬜ |
 | 6–7 | Kotlin app | ⬜ |
