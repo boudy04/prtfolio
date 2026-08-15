@@ -28,6 +28,12 @@
   a { color:var(--accent); text-decoration:none; }
   .display { font-family:"Instrument Serif",Georgia,"Times New Roman",serif; }
 
+  .progress { position:fixed; top:0; left:0; height:3px; width:0; background:var(--accent); z-index:9998; }
+  .eyebrow .num { margin-right:12px; opacity:.55; font-variant-numeric:tabular-nums; }
+  .hero h1, .hero .tag { animation:rise .9s cubic-bezier(.2,.7,.2,1) both; }
+  .hero .tag { animation-delay:.15s; }
+  @keyframes rise { from { opacity:0; transform:translateY(34px); } to { opacity:1; transform:none; } }
+
   /* custom cursor */
   .cursor {
     position:fixed; top:0; left:0; width:18px; height:18px; border-radius:50%;
@@ -85,11 +91,14 @@
   @media (prefers-reduced-motion:reduce) {
     * { transition:none !important; scroll-behavior:auto; }
     .reveal,.mask > * { opacity:1; transform:none; }
+    .hero h1,.hero .tag { animation:none; }
+    .progress { display:none; }
   }
 </style>
 </head>
 <body>
 <div class="cursor" aria-hidden="true"></div>
+<div class="progress" aria-hidden="true"></div>
 <div class="wrap">
 
   <nav class="topnav">
@@ -105,7 +114,7 @@
   </header>
 
   <section class="reveal">
-    <p class="eyebrow">Selected work</p>
+    <p class="eyebrow"><span class="num">01</span>Selected work</p>
     <h2 class="display">Projects</h2>
     <div class="cards">
       <div class="card">
@@ -117,7 +126,7 @@
   </section>
 
   <section class="reveal">
-    <p class="eyebrow">Toolbox</p>
+    <p class="eyebrow"><span class="num">02</span>Toolbox</p>
     <h2 class="display">Skills</h2>
     <div class="panel">
       <ul>
@@ -130,7 +139,7 @@
   </section>
 
   <section class="reveal">
-    <p class="eyebrow">Background</p>
+    <p class="eyebrow"><span class="num">03</span>Background</p>
     <h2 class="display">Education</h2>
     <div class="panel">
       <ul>
@@ -141,7 +150,7 @@
   </section>
 
   <section class="reveal">
-    <p class="eyebrow">What I've done</p>
+    <p class="eyebrow"><span class="num">04</span>What I've done</p>
     <h2 class="display">Experience</h2>
     <div class="panel">
       <ul>
@@ -153,7 +162,7 @@
   </section>
 
   <section class="reveal">
-    <p class="eyebrow">Off-screen</p>
+    <p class="eyebrow"><span class="num">05</span>Off-screen</p>
     <h2 class="display">Activities</h2>
     <div class="panel">
       <ul><li>Chess, Kung Fu, Public Speaking, continuous self-development.</li></ul>
@@ -166,6 +175,16 @@
 <script>
   (function () {
     var root = document.documentElement;
+
+    var bar = document.querySelector('.progress');
+    function onScroll() {
+      var h = document.documentElement;
+      var max = h.scrollHeight - h.clientHeight;
+      bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    onScroll();
     try {
       var saved = localStorage.getItem('theme');
       if (saved) root.setAttribute('data-theme', saved);
