@@ -47,8 +47,9 @@
 
   /* cover-page hero */
   .hero { min-height:92vh; display:flex; flex-direction:column; justify-content:center; position:relative; }
-  .hero::after {
-    content:''; position:absolute; inset:0;
+
+  body::after {
+    content:''; position:fixed; inset:0;
     background: radial-gradient(circle at var(--mouse-x,50%) var(--mouse-y,50%), rgba(255,95,29,0.08), transparent 50%);
     pointer-events:none; z-index:0;
     transition:background-position .2s;
