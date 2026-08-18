@@ -15,7 +15,7 @@ Open `index.html` in a browser. No install, no build step.
 - Single `index.html` (inline CSS + vanilla JS, no framework).
 - Fonts (Instrument Serif + Outfit) loaded non-blocking from Google Fonts, so the page never hangs if the CDN is unreachable.
 - Resume sections: Projects, Skills, Education, Experience, Activities.
-- Interactions: theme toggle (persisted), custom cursor + magnetic buttons (desktop only), scroll reveals (mobile-safe, no-JS fallback).
+- Interactions: theme toggle (persisted), custom cursor + magnetic buttons (desktop only), scroll reveals (mobile-safe, no-JS fallback), minimal Canvas UI-inspired radial gradient following cursor.
 
 ## Gaps this closes
 G1 (shipped project), G2 (GitHub link), G3 (live deployment).

@@ -46,7 +46,13 @@
   .wrap { max-width:1080px; margin:0 auto; padding:0 28px; }
 
   /* cover-page hero */
-  .hero { min-height:92vh; display:flex; flex-direction:column; justify-content:center; }
+  .hero { min-height:92vh; display:flex; flex-direction:column; justify-content:center; position:relative; }
+  .hero::after {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(circle at var(--mouse-x,50%) var(--mouse-y,50%), rgba(255,95,29,0.03), transparent 50%);
+    pointer-events:none; z-index:0;
+    transition:background-position .2s;
+  }
   .hero h1 {
     font-size:clamp(3rem,12vw,9rem); line-height:.92; letter-spacing:-.03em; margin:0;
     font-weight:600;
@@ -216,6 +222,8 @@
       (function loop() {
         cx += (mx - cx) * 0.2; cy += (my - cy) * 0.2;
         cur.style.left = cx + 'px'; cur.style.top = cy + 'px';
+        document.documentElement.style.setProperty('--mouse-x', mx + 'px');
+        document.documentElement.style.setProperty('--mouse-y', my + 'px');
         requestAnimationFrame(loop);
       })();
       document.querySelectorAll('a, button').forEach(function (el) {
