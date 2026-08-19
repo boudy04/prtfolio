@@ -47,13 +47,6 @@
 
   /* cover-page hero */
   .hero { min-height:92vh; display:flex; flex-direction:column; justify-content:center; position:relative; }
-
-  body::after {
-    content:''; position:fixed; inset:0;
-    background: radial-gradient(circle at var(--mouse-x,50%) var(--mouse-y,50%), rgba(255,95,29,0.08), transparent 50%);
-    pointer-events:none; z-index:0;
-    transition:background-position .2s;
-  }
   .hero h1 {
     font-size:clamp(3rem,12vw,9rem); line-height:.92; letter-spacing:-.03em; margin:0;
     font-weight:600;
@@ -90,14 +83,10 @@
   .reveal { opacity:0; transform:translateY(28px); transition:opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
   .reveal.visible { opacity:1; transform:none; }
 
-  .mask { overflow:hidden; }
-  .mask > * { display:block; transform:translateY(100%); transition:transform .9s cubic-bezier(.2,.7,.2,1); }
-  .mask.visible > * { transform:none; }
-
   footer { padding:60px 0 80px; color:var(--muted); font-size:.85rem; text-align:center; }
   @media (prefers-reduced-motion:reduce) {
     * { transition:none !important; scroll-behavior:auto; }
-    .reveal,.mask > * { opacity:1; transform:none; }
+    .reveal { opacity:1; transform:none; }
     .hero h1,.hero .tag { animation:none; }
     .progress { display:none; }
   }
@@ -106,7 +95,9 @@
 <body>
 <div class="cursor" aria-hidden="true"></div>
 <div class="progress" aria-hidden="true"></div>
-<div class="wrap">
+<canvas id="liquid-source" layoutsubtree="true" aria-hidden="true" style="display:none"></canvas>
+<canvas id="liquid-output" aria-hidden="true" style="position:fixed; inset:0; width:100vw; height:100vh; pointer-events:none; z-index:1;"></canvas>
+<div class="wrap" id="liquid-content">
 
   <nav class="topnav">
     <a class="pill" href="https://github.com/boudy04">GitHub</a>
@@ -223,8 +214,6 @@
       (function loop() {
         cx += (mx - cx) * 0.2; cy += (my - cy) * 0.2;
         cur.style.left = cx + 'px'; cur.style.top = cy + 'px';
-        document.documentElement.style.setProperty('--mouse-x', mx + 'px');
-        document.documentElement.style.setProperty('--mouse-y', my + 'px');
         requestAnimationFrame(loop);
       })();
       document.querySelectorAll('a, button').forEach(function (el) {
@@ -243,5 +232,6 @@
     }
   })();
 </script>
+<script src="canvas-ui.js" defer></script>
 </body>
 </html>
