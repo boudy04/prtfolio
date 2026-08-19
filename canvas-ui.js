@@ -84,8 +84,12 @@ void main () {
   var content = document.getElementById("liquid-content");
   var output = document.getElementById("liquid-output");
   if (!source || !content || !output) return;
-  CanvasUI.createRipple(
+  var ripple = CanvasUI.createRipple(
     { source: source, content: content, output: output },
-    { amplitude: 0.45, speed: 0.6, wavelength: 100, rings: 2, decay: 1.7, shine: 0.4, trigger: "click", interval: 0 }
+    { amplitude: 0.45, speed: 0.6, wavelength: 100, rings: 2, decay: 1.7, shine: 0.4, trigger: "none", interval: 0 }
   );
+  if (!ripple) return;
+  document.addEventListener("pointerdown", function (e) {
+    ripple.splash(e.clientX, e.clientY, 1);
+  }, { passive: true });
 });
