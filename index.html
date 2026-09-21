@@ -34,6 +34,13 @@
   .hero .tag { animation-delay:.15s; }
   @keyframes rise { from { opacity:0; transform:translateY(34px); } to { opacity:1; transform:none; } }
 
+  .scroll-hint {
+    position:absolute; bottom:32px; left:50%; transform:translateX(-50%);
+    color:var(--muted); font-size:1.4rem; animation:bob 2s ease-in-out infinite;
+    opacity:.5; z-index:1;
+  }
+  @keyframes bob { 0%,100% { transform:translateX(-50%) translateY(0); } 50% { transform:translateX(-50%) translateY(8px); } }
+
   /* custom cursor */
   .cursor {
     position:fixed; top:0; left:0; width:18px; height:18px; border-radius:50%;
@@ -46,7 +53,7 @@
   .wrap { max-width:1080px; margin:0 auto; padding:0 28px; }
 
   /* cover-page hero */
-  .hero { min-height:92vh; display:flex; flex-direction:column; justify-content:center; position:relative; }
+  .hero { min-height:72vh; display:flex; flex-direction:column; justify-content:center; position:relative; }
   .hero h1 {
     font-size:clamp(3rem,12vw,9rem); line-height:.92; letter-spacing:-.03em; margin:0;
     font-weight:600;
@@ -63,6 +70,7 @@
   }
   .pill:hover { border-color:var(--accent); color:var(--accent); text-decoration:none; }
   #theme { background:none; }
+  .pill.muted { cursor:default; opacity:.6; pointer-events:none; }
 
   section { padding:90px 0; border-top:1px solid var(--border); }
   .eyebrow { text-transform:uppercase; letter-spacing:.18em; font-size:.75rem; color:var(--accent); margin:0 0 22px; }
@@ -88,6 +96,7 @@
     * { transition:none !important; scroll-behavior:auto; }
     .reveal { opacity:1; transform:none; }
     .hero h1,.hero .tag { animation:none; }
+    .scroll-hint { animation:none; }
     .progress { display:none; }
   }
 
@@ -119,20 +128,69 @@
   }
   .card:hover::after { opacity:1; }
 
+  /* underwater ambient: faint caustic shimmer + blue vignette */
+  .underwater {
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(ellipse 120% 80% at 50% 120%, rgba(0,30,60,.08), transparent 70%),
+      radial-gradient(ellipse 60% 40% at 30% 20%, rgba(0,60,100,.04), transparent 50%);
+    animation: causticShift 12s ease-in-out infinite alternate;
+  }
+  html[data-theme="light"] .underwater {
+    background:
+      radial-gradient(ellipse 120% 80% at 50% 120%, rgba(0,40,80,.05), transparent 70%),
+      radial-gradient(ellipse 60% 40% at 30% 20%, rgba(0,80,130,.03), transparent 50%);
+  }
+  @keyframes causticShift {
+    0%   { opacity:.6; transform:scale(1) translateY(0); }
+    50%  { opacity:.9; transform:scale(1.02) translateY(-2px); }
+    100% { opacity:.6; transform:scale(1) translateY(2px); }
+  }
+
   section a:not(.pill) {
     background:linear-gradient(currentColor,currentColor) no-repeat left bottom / 0% 1px;
     padding-bottom:2px;
     transition:background-size .25s ease;
   }
   section a:not(.pill):hover { background-size:100% 1px; }
+
+  /* tab switcher */
+  .tab-window {
+    background:var(--card); border:1px solid var(--border); border-radius:14px;
+    box-shadow:var(--shadow); overflow:hidden;
+  }
+  .tab-bar {
+    display:flex; gap:0; padding:4px; background:var(--bg);
+  }
+  .tab-btn {
+    flex:1; padding:8px 0; border:none; background:transparent;
+    font-size:.8rem; color:var(--muted); cursor:pointer; font-family:inherit;
+    transition:background .25s, color .25s; text-align:center; border-radius:10px;
+    position:relative; z-index:1;
+  }
+  .tab-btn.active {
+    background:var(--accent); color:#fff; font-weight:500;
+  }
+  .tab-panels { position:relative; overflow:hidden; }
+  .tab-panel {
+    padding:22px 24px;
+    opacity:0; transform:translateY(8px);
+    transition:opacity .25s ease, transform .25s ease;
+    pointer-events:none; position:absolute; inset:0;
+  }
+  .tab-panel.active {
+    opacity:1; transform:translateY(0); pointer-events:auto; position:relative;
+  }
 </style>
 </head>
 <body>
+<div class="underwater" aria-hidden="true"></div>
 <div class="cursor" aria-hidden="true"></div>
 <div class="progress" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
 <canvas id="liquid-source" layoutsubtree="true" aria-hidden="true" style="display:none"></canvas>
 <canvas id="liquid-output" aria-hidden="true" style="position:fixed; inset:0; width:100vw; height:100vh; pointer-events:none; z-index:1;"></canvas>
+<canvas id="particles" aria-hidden="true" style="position:fixed; inset:0; width:100vw; height:100vh; pointer-events:none; z-index:0;"></canvas>
 <div class="wrap" id="liquid-content">
 
   <nav class="topnav">
@@ -145,64 +203,63 @@
   <header class="hero">
     <h1 class="display">Abdelrahman<br><span class="accent">Magdy</span></h1>
     <p class="tag">Software Engineering student (GPA 3.89, AAST) building Android apps in Kotlin and Java.</p>
+    <div class="scroll-hint" aria-hidden="true">↓</div>
   </header>
 
   <section class="reveal">
-    <p class="eyebrow"><span class="num">01</span>Selected work</p>
-    <h2 class="display">Projects</h2>
-    <div class="cards">
-      <div class="card">
-        <h3 class="display">Portfolio Site</h3>
-        <p>Static site, zero build, hosted on GitHub Pages. The page you're on.</p>
-        <a href="https://boudy04.github.io/prtfolio/">Live</a> · <a href="https://github.com/boudy04/prtfolio">Repo</a>
+    <p class="eyebrow"><span class="num">01</span>Work</p>
+    <h2 class="display">Projects &amp; Skills</h2>
+    <div class="tab-window">
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="skills">Skills</button>
+        <button class="tab-btn" data-tab="projects">Projects</button>
       </div>
-      <div class="card">
-        <h3 class="display">git-stats</h3>
-        <p>Java 21 CLI that analyzes git history — authors, file churn, activity, directories, repo summary. Maven + picocli + JUnit, CI on GitHub Actions.</p>
-        <a href="https://github.com/boudy04/git-stats">Repo</a>
-      </div>
-      <div class="card">
-        <h3 class="display">Task API</h3>
-        <p>FastAPI + Postgres task tracker — bearer-token auth, status filter, full CRUD, Docker, pytest + Postgres on GitHub Actions.</p>
-        <a href="https://prject-cv-production.up.railway.app/docs">Live</a> · <a href="https://github.com/boudy04/task-api">Repo</a>
-      </div>
-      <div class="card">
-        <h3 class="display">TaskVault</h3>
-        <p>Kotlin + Compose Android client for the Task API — offline-first with Room cache, WorkManager sync queue, biometric lock, Glance widget, CI on GitHub Actions.</p>
-        <a href="https://github.com/boudy04/taskvault">Repo</a>
+      <div class="tab-panels">
+        <div id="tab-skills" class="tab-panel active">
+          <div class="panel" style="box-shadow:none; border:none; padding:0;">
+            <ul>
+              <li><strong>Languages:</strong> Java, Kotlin, C, C++, JavaScript, SQL</li>
+              <li><strong>Mobile:</strong> Android Studio, XML, RecyclerView, SharedPreferences, custom timers</li>
+              <li><strong>Networking &amp; Web:</strong> HTTP</li>
+              <li><strong>CS core:</strong> OOP, multithreading, data structures &amp; algorithms, MARIE CPU, digital logic design, discrete structures, probability &amp; statistics</li>
+            </ul>
+          </div>
+        </div>
+        <div id="tab-projects" class="tab-panel">
+          <div class="cards">
+            <div class="card">
+              <h3 class="display">Portfolio Site</h3>
+              <p>Static site, zero build, hosted on GitHub Pages. The page you're on.</p>
+              <a href="https://boudy04.github.io/prtfolio/">Live</a> · <a href="https://github.com/boudy04/prtfolio">Repo</a>
+            </div>
+            <div class="card">
+              <h3 class="display">git-stats</h3>
+              <p>Java 21 CLI that analyzes git history — authors, file churn, activity, directories, repo summary. Maven + picocli + JUnit, CI on GitHub Actions.</p>
+              <a href="https://github.com/boudy04/git-stats">Repo</a>
+            </div>
+            <div class="card">
+              <h3 class="display">Task API</h3>
+              <p>FastAPI + Postgres task tracker — bearer-token auth, status filter, full CRUD, Docker, pytest + Postgres on GitHub Actions.</p>
+              <a href="https://prject-cv-production.up.railway.app/docs">Live</a> · <a href="https://github.com/boudy04/task-api">Repo</a>
+            </div>
+            <div class="card">
+              <h3 class="display">TaskVault</h3>
+              <p>Kotlin + Compose Android client for the Task API — offline-first with Room cache, WorkManager sync queue, biometric lock, Glance widget, CI on GitHub Actions.</p>
+              <a href="https://github.com/boudy04/taskvault">Repo</a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="reveal">
-    <p class="eyebrow"><span class="num">02</span>Toolbox</p>
-    <h2 class="display">Skills</h2>
-    <div class="panel">
-      <ul>
-        <li><strong>Languages:</strong> Java, Kotlin, C, C++, JavaScript, SQL</li>
-        <li><strong>Mobile:</strong> Android Studio, XML, RecyclerView, SharedPreferences, custom timers</li>
-        <li><strong>Networking &amp; Web:</strong> HTTP</li>
-        <li><strong>CS core:</strong> OOP, multithreading, data structures &amp; algorithms, MARIE CPU, digital logic design, discrete structures, probability &amp; statistics</li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="reveal">
-    <p class="eyebrow"><span class="num">03</span>Background</p>
-    <h2 class="display">Education</h2>
+    <p class="eyebrow"><span class="num">02</span>Education &amp; Experience</p>
+    <h2 class="display">Background</h2>
     <div class="panel">
       <ul>
         <li><strong>Arab Academy for Science, Technology &amp; Maritime Transport</strong> — B.Sc. Software Engineering, expected 2028</li>
         <li><strong>Egyptian American School (Alexandria)</strong> — American Diploma, GPA 3.89</li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="reveal">
-    <p class="eyebrow"><span class="num">04</span>What I've done</p>
-    <h2 class="display">Experience</h2>
-    <div class="panel">
-      <ul>
         <li><strong>Peer Mentorship &amp; Technical Leadership</strong> — selected by professors to mentor peers in OOP; assisted <strong>20+ students</strong> debugging Java and understanding multithreading.</li>
         <li><strong>Mobile &amp; OOP Development</strong> — built object-oriented and Android apps in Java (inheritance, polymorphism, multithreading) and Kotlin/XML, delivering functional projects end to end.</li>
         <li><strong>Systems Architecture &amp; Analytics</strong> — deep analysis of MARIE CPU memory latency and instruction cycles, applied across Probability &amp; Statistics and Digital Logic Design.</li>
@@ -211,7 +268,7 @@
   </section>
 
   <section class="reveal">
-    <p class="eyebrow"><span class="num">05</span>Off-screen</p>
+    <p class="eyebrow"><span class="num">03</span>Beyond Code</p>
     <h2 class="display">Activities</h2>
     <div class="panel">
       <ul><li>Chess, Kung Fu, Public Speaking, continuous self-development.</li></ul>
@@ -283,8 +340,119 @@
         btn.addEventListener('mouseleave', function () { btn.style.transform = ''; });
       });
     }
+
+    // Tab switcher (animated)
+    document.querySelectorAll('.tab-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var targetId = 'tab-' + btn.dataset.tab;
+        if (document.getElementById(targetId).classList.contains('active')) return;
+        document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        var current = document.querySelector('.tab-panel.active');
+        if (current) {
+          current.style.opacity = '0';
+          current.style.transform = 'translateY(8px)';
+          setTimeout(function() {
+            current.classList.remove('active');
+            current.style.opacity = '';
+            current.style.transform = '';
+            document.getElementById(targetId).classList.add('active');
+          }, 250);
+        } else {
+          document.getElementById(targetId).classList.add('active');
+        }
+      });
+    });
   })();
 </script>
 <script src="canvas-ui.js" defer></script>
+<script>
+(function() {
+  var canvas = document.getElementById('particles');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W, H, particles = [], mouse = { x: -9999, y: -9999 };
+  var COUNT = 40;
+  var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+  function resize() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.scale(dpr, dpr);
+  }
+
+  function createParticle() {
+    var r = 1.5 + Math.random() * 3;
+    return {
+      x: Math.random() * W,
+      y: H + r + Math.random() * 100,
+      r: r,
+      vx: (Math.random() - 0.5) * 0.15,
+      vy: -(0.15 + Math.random() * 0.35),
+      alpha: 0.08 + Math.random() * 0.15,
+      wobble: Math.random() * Math.PI * 2,
+      wobbleSpeed: 0.005 + Math.random() * 0.01
+    };
+  }
+
+  function init() {
+    resize();
+    particles = [];
+    for (var i = 0; i < COUNT; i++) {
+      var p = createParticle();
+      p.y = Math.random() * H;
+      particles.push(p);
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+
+      p.wobble += p.wobbleSpeed;
+      p.x += p.vx + Math.sin(p.wobble) * 0.2;
+      p.y += p.vy;
+
+      var dx = p.x - mouse.x;
+      var dy = p.y - mouse.y;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 120) {
+        var force = (120 - dist) / 120 * 0.8;
+        p.x += dx / dist * force;
+        p.y += dy / dist * force;
+      }
+
+      if (p.y < -p.r * 2 || p.x < -50 || p.x > W + 50) {
+        particles[i] = createParticle();
+      }
+
+      var col = isLight ? '100,140,180' : '80,140,200';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(' + col + ',' + p.alpha + ')';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(p.x - p.r * 0.25, p.y - p.r * 0.25, p.r * 0.35, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,' + (p.alpha * 0.5) + ')';
+      ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  document.addEventListener('mousemove', function(e) {
+    mouse.x = e.clientX; mouse.y = e.clientY;
+  }, { passive: true });
+
+  window.addEventListener('resize', resize);
+  init();
+  draw();
+})();
+</script>
 </body>
 </html>

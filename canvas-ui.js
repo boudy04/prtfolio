@@ -86,7 +86,7 @@ void main () {
   if (!source || !content || !output) return;
   var ripple = CanvasUI.createRipple(
     { source: source, content: content, output: output },
-    { amplitude: 0.45, speed: 0.6, wavelength: 100, rings: 2, decay: 1.7, shine: 0.4, trigger: "none", interval: 0 }
+    { amplitude: 0.45, speed: 0.6, wavelength: 100, rings: 2, decay: 1.7, shine: 0.6, trigger: "none", interval: 0 }
   );
   if (!ripple) return;
   document.addEventListener("pointerdown", function (e) {
